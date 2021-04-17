@@ -10,10 +10,13 @@ import cryptocompare as cc
 class DataIn:
     __ethPrices = []
 
-    def __init__(self, startYear):
-       self.__QueryAPI(startYear)
+    def __init__(self):
+       load_dotenv()
+       cc.cryptocompare._set_api_key_parameter(os.getenv('CB_API_KEY'))
        
-    def __QueryAPI(self, startYear):
+    def QueryAPI(self):
+        startYear = input("Start Year: ")
+        startYear = int(startYear)
         EthSnip = namedtuple("EthSnip", ["year","month","day","price"])
         # Get historical ETH prices from start year to end of last full year
         for year in range(startYear, datetime.date.today().year):
@@ -38,30 +41,5 @@ class DataIn:
             price = cc.get_historical_price('ETH', 'USD', datetime.datetime(year,month,day))
             self.__ethPrices.append(EthSnip(year,month,day,price['ETH']['USD']))
         
-        self.__InsertIntoDB(self.__ethPrices)
-
-    def __InsertIntoDB(self, prices):
-        # Establish DB Connection
-        db = mysql.connector.connect(
-            host="localhost",
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASS'),
-            database="ethsage",
-        )
-
-        # Insert each item into the DB
-        ethcursor = db.cursor()
-        for e in prices:
-            queryString='INSERT INTO ethprices(year,month,day,price) VALUES (%s,%s,%s,%s)'
-            values=(e[0], e[1], e[2], e[3])
-            ethcursor.execute(queryString, values)
-            db.commit()
-
-def __main__():
-    load_dotenv()
-    cc.cryptocompare._set_api_key_parameter(os.getenv('CB_API_KEY'))
-
-    year = input("Start year: ")
-    data = DataIn(int(year))
-
-__main__()
+        # Return List
+        return self.__ethPrices
