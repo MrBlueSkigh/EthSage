@@ -14,6 +14,8 @@ class ProccessData:
         ethdf = pd.DataFrame(prices, columns=['Year','Month','Day','Price'])
         self.__SendToJson(ethdf)
 
+        #todo, use dataframe to train model
+
     def __SendToJson(self, df):
         jsonString = json.dumps(json.loads(df.to_json(orient="index")), indent=4)
         with open('EthPrices.json','x') as f:
