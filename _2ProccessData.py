@@ -6,10 +6,12 @@ from _1DataIn import DataIn
 class ProccessData:
     def __init__(self):
         di = DataIn()
-        di.QueryAPI()
+        prices = di.QueryAPI()
+        self.CreateDataframe(prices)
     
-    def CreateDataframe(self, pricelist):
-        print('df')
+    def CreateDataframe(self, prices):
+        ethdf = pd.DataFrame(prices, columns=['Year','Month','Day','Price'])
+        print(ethdf)
 
 
 
